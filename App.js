@@ -24,11 +24,11 @@ Ext.define('CustomApp', {
 		load: this._onStoriesLoaded,
 		scope: this
 	    }
-	    });
+	});
     },
     _onStoriesLoaded: function(store,records){
         var myData = [];
-        //in case we want to track them separately
+        //in case we want to track them separately:
         //var estimatedStories = []; 
         //var unestimatedStories = [];
 	console.log(records.length);
@@ -40,14 +40,11 @@ Ext.define('CustomApp', {
             //else{
             //    unestimatedStories.push(record);
             //}
-            estimated = record.get('PlanEstimate') ? true : false
+            estimated = record.get('PlanEstimate') ? true : false;
             console.log(estimated);
-            var obj = {
-                isEstimated: estimated,
-                Name: record.get('Name'),
-                FormattedID: record.get('FormattedID'),
-                PlanEstimate: record.get('PlanEstimate')
-            };
+            var obj = Ext.apply(record.getData(),{
+                isEstimated: estimated
+            });
             myData.push(obj);
         },this);
         //console.log(estimatedStories.length, unestimatedStories.length);
@@ -66,15 +63,20 @@ Ext.define('CustomApp', {
             xtype: 'rallygrid',
             itemId: 'storyGrid',
             store: gridStore,
+            showRowActionsColumn: false,
+            width: 400,
             features: [
-                       {
-                        ftype:'grouping',
-                        groupHeaderTpl: 'Estimated: {name} ({rows.length} {[values.rows.length > 1 ? "Stories" : "Story"]})'
-                       }
-                       ],
+                {
+                    ftype:'grouping',
+                    groupHeaderTpl: 'Estimated: {name} ({rows.length} {[values.rows.length > 1 ? "Stories" : "Story"]})'
+                }
+            ],
             columnCfgs:[
                 {
-                    text: 'ID', dataIndex: 'FormattedID'
+                    xtype: 'templatecolumn',
+                    text: 'ID',
+                    dataIndex: 'FormattedID',
+                    tpl: Ext.create('Rally.ui.renderer.template.FormattedIDTemplate')
                 },
                 {
                   text: 'Name', dataIndex: 'Name'
